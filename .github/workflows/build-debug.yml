@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - myFork-v2rayNG
+      - myFork-stable
 
 jobs:
   build:
