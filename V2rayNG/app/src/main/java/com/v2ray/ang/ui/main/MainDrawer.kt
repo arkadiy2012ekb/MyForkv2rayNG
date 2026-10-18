@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -39,7 +40,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.v2ray.ang.R
-import com.v2ray.ang.ui.compose.AppDivider
 import com.v2ray.ang.ui.compose.LocalDarkTheme
 import com.v2ray.ang.ui.compose.verticalScrollbar
 
@@ -129,7 +129,12 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
             }
             Spacer(modifier = Modifier.height(8.dp))
             drawerItems.forEachIndexed { index, item ->
-                if (index == primaryDrawerItems.size) AppDivider()
+                if (index == primaryDrawerItems.size) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 28.dp, vertical = 8.dp),
+                        color = itemColor.copy(alpha = 0.7f)
+                    )
+                }
                 // Свой пункт меню: меньше отступов, поэтому подписи помещаются в одну строку
                 Row(
                     modifier = Modifier
@@ -149,7 +154,8 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = stringResource(item.labelRes),
-                        fontSize = 13.sp,
+                        fontSize = 14.sp,
+                        letterSpacing = 0.1.sp,
                         fontWeight = FontWeight.Medium,
                         color = itemColor
                     )
