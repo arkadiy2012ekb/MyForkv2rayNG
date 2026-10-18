@@ -154,7 +154,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = stringResource(item.labelRes),
-                        fontSize = 14.sp,
+                        fontSize = 15.sp,
                         letterSpacing = 0.1.sp,
                         fontWeight = FontWeight.Medium,
                         color = itemColor
