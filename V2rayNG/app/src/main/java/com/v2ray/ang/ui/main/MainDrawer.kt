@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
@@ -32,19 +33,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.v2ray.ang.R
 import com.v2ray.ang.ui.compose.LocalDarkTheme
 import com.v2ray.ang.ui.compose.verticalScrollbar
+
+// Шрифт Montserrat Thin уже есть в проекте (res/font/montserrat_thin.ttf)
+private val TitleFontFamily = FontFamily(Font(R.font.montserrat_thin, FontWeight.Thin))
 
 enum class MainDestination(@DrawableRes val iconRes: Int, @StringRes val labelRes: Int) {
     Subscriptions(R.drawable.ic_subscriptions_24dp, R.string.title_sub_setting),
@@ -115,22 +128,53 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(R.mipmap.ic_launcher_foreground),
-                        contentDescription = null,
-                        modifier = Modifier.size(64.dp),
-                        colorFilter = if (isDarkTheme) {
-                            ColorFilter.tint(Color.White, BlendMode.SrcIn)
-                        } else {
-                            null
-                        }
-                    )
+                    // Значок: увеличен и с тенью (тень - тёмная копия значка со смещением и размытием)
+                    Box(
+                        modifier = Modifier.size(100.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(R.mipmap.ic_launcher_foreground),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(64.dp)
+                                .offset(x = 3.dp, y = 5.dp)
+                                .scale(2.6f)
+                                .blur(2.dp, BlurredEdgeTreatment.Unbounded),
+                            colorFilter = ColorFilter.tint(
+                                Color.Black.copy(alpha = 0.5f),
+                                BlendMode.SrcIn
+                            )
+                        )
+                        Image(
+                            painter = painterResource(R.mipmap.ic_launcher_foreground),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(64.dp)
+                                .scale(2.6f),
+                            colorFilter = if (isDarkTheme) {
+                                ColorFilter.tint(Color.White, BlendMode.SrcIn)
+                            } else {
+                                null
+                            }
+                        )
+                    }
+                    // Название: Montserrat Thin, курсив под наклон значка и тень
                     Text(
                         text = stringResource(R.string.app_name),
-                        fontSize = 40.sp,
-                        fontWeight = FontWeight.Light,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
-                        modifier = Modifier.padding(start = 4.dp)
+                        fontSize = 42.sp,
+                        fontFamily = TitleFontFamily,
+                        fontStyle = FontStyle.Italic,
+                        fontWeight = FontWeight.Thin,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = TextStyle(
+                            shadow = Shadow(
+                                color = Color.Black.copy(alpha = 0.35f),
+                                offset = Offset(3f, 5f),
+                                blurRadius = 6f
+                            )
+                        ),
+                        modifier = Modifier.offset(y = 14.dp)
                     )
                 }
             }
