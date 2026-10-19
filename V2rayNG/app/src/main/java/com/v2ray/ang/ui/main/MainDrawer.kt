@@ -33,8 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.BlendMode
@@ -128,24 +126,27 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Значок: увеличен и с тенью (тень - тёмная копия значка со смещением и размытием)
+                    // Значок: увеличен, с мягкой тенью
                     Box(
                         modifier = Modifier.size(100.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Image(
-                            painter = painterResource(R.mipmap.ic_launcher_foreground),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(64.dp)
-                                .offset(x = 3.dp, y = 5.dp)
-                                .scale(2.6f)
-                                .blur(2.dp, BlurredEdgeTreatment.Unbounded),
-                            colorFilter = ColorFilter.tint(
-                                Color.Black.copy(alpha = 0.5f),
-                                BlendMode.SrcIn
+                        // Тень: несколько слабых копий значка с небольшим смещением (мягкий край, без размытия)
+                        repeat(4) { i ->
+                            val d = (i + 1) * 0.4f
+                            Image(
+                                painter = painterResource(R.mipmap.ic_launcher_foreground),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .offset(x = d.dp, y = (d * 1.4f).dp)
+                                    .scale(2.6f),
+                                colorFilter = ColorFilter.tint(
+                                    Color.Black.copy(alpha = 0.08f),
+                                    BlendMode.SrcIn
+                                )
                             )
-                        )
+                        }
                         Image(
                             painter = painterResource(R.mipmap.ic_launcher_foreground),
                             contentDescription = null,
