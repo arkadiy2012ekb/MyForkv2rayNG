@@ -99,7 +99,6 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
         modifier = Modifier
             .fillMaxWidth(0.835f)
             .windowInsetsPadding(WindowInsets.systemBars),
-        drawerShape = RoundedCornerShape(topEnd = 28.dp, bottomEnd = 28.dp),
         drawerContainerColor = containerColor,
         windowInsets = WindowInsets(0, 0, 0, 0)
     ) {
