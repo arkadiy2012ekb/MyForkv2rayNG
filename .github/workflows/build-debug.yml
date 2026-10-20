@@ -1,10 +1,10 @@
-name: Build debug APK
+name: Build debug APK (english test)
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - myFork-v2rayNG
+      - english-test-ru-en
 
 jobs:
   build:
@@ -66,7 +66,7 @@ jobs:
 
     - name: Mark build number in version name
       run: |
-        sed -i 's/versionName = "\([0-9.]*\)"/versionName = "\1-b${{ github.run_number }}"/' ${{ github.workspace }}/V2rayNG/app/build.gradle.kts
+        sed -i 's/versionName = "\([0-9.]*\)"/versionName = "\1-en${{ github.run_number }}"/' ${{ github.workspace }}/V2rayNG/app/build.gradle.kts
         grep -n "versionName" ${{ github.workspace }}/V2rayNG/app/build.gradle.kts
 
     - name: Build debug APK (arm64-v8a only)
@@ -79,5 +79,5 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@v7
       with:
-        name: v2rayNG-debug-arm64-b${{ github.run_number }}
+        name: v2rayNG-debug-arm64-en${{ github.run_number }}
         path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/fdroid/debug/*.apk
