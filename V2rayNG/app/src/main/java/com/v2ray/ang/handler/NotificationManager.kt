@@ -186,8 +186,10 @@ object NotificationManager {
             } else {
                 mBuilder?.setSmallIcon(R.drawable.ic_stat_direct)
             }
-            mBuilder?.setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
-            mBuilder?.setContentText(contentText)
+            // Trailing line break after the last row created an empty line above the action buttons
+            val text = contentText?.trimEnd()
+            mBuilder?.setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            mBuilder?.setContentText(text)
             getNotificationManager()?.notify(NOTIFICATION_ID, mBuilder?.build())
         }
     }
