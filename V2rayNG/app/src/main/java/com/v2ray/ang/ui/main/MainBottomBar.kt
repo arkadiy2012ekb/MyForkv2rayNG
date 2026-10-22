@@ -84,7 +84,7 @@ fun MainBottomBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(76.dp)
-                    .padding(start = 16.dp, end = 16.dp, top = 12.dp),
+                    .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
