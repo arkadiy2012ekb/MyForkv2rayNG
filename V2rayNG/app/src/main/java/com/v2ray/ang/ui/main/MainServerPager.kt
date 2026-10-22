@@ -315,11 +315,11 @@ private fun ServerListItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 20.dp, vertical = 10.dp),
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
         tonalElevation = 0.dp,
-        shadowElevation = 4.dp
+        shadowElevation = 6.dp
     ) {
         Row(
             modifier = Modifier
