@@ -440,4 +440,13 @@ internal suspend fun PagerState.navigateToPageOptimized(
     animateAdjacentPage: Boolean = true
 ) {
     if (pageCount <= 0) return
-    val target =
+    val target = targetPage.coerceIn(0, pageCount - 1)
+    val current = settledPage.coerceIn(0, pageCount - 1)
+    if (target == current) return
+
+    if (abs(target - current) == 1 && animateAdjacentPage) {
+        animateScrollToPage(target)
+    } else {
+        scrollToPage(target)
+    }
+}
