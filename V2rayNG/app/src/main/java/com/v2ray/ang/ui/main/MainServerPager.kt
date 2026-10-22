@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,6 +37,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -315,11 +319,25 @@ private fun ServerListItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 6.dp, vertical = 4.dp),
+            .padding(horizontal = 6.dp, vertical = 4.dp)
+            .drawBehind {
+                val layers = 8
+                val maxOut = 4.dp.toPx()
+                val radius = 16.dp.toPx()
+                for (i in layers downTo 1) {
+                    val out = maxOut * i / layers
+                    drawRoundRect(
+                        color = Color.Black.copy(alpha = 0.022f),
+                        topLeft = Offset(-out, -out),
+                        size = Size(size.width + 2 * out, size.height + 2 * out),
+                        cornerRadius = CornerRadius(radius + out, radius + out)
+                    )
+                }
+            },
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
         tonalElevation = 0.dp,
-        shadowElevation = 6.dp
+        shadowElevation = 0.dp
     ) {
         Row(
             modifier = Modifier
@@ -332,24 +350,7 @@ private fun ServerListItem(
                 }
                 .clickable { actions.select(row.guid) }
         ) {
-            Box(
-                Modifier
-                    .width(10.dp)
-                    .fillMaxHeight()
-            ) {
-                if (isSelected) {
-                    Row {
-                        Spacer(Modifier.width(6.dp))
-                        Box(
-                            Modifier
-                                .width(4.dp)
-                                .fillMaxHeight()
-                                .padding(vertical = 10.dp)
-                                .background(MaterialTheme.colorScheme.primary)
-                        )
-                    }
-                }
-            }
+            Spacer(Modifier.width(10.dp))
 
             Column(
                 Modifier
