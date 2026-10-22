@@ -315,7 +315,7 @@ private fun ServerListItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 2.dp, vertical = 4.dp),
+            .padding(horizontal = 6.dp, vertical = 4.dp),
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
         tonalElevation = 0.dp,
@@ -440,13 +440,4 @@ internal suspend fun PagerState.navigateToPageOptimized(
     animateAdjacentPage: Boolean = true
 ) {
     if (pageCount <= 0) return
-    val target = targetPage.coerceIn(0, pageCount - 1)
-    val current = settledPage.coerceIn(0, pageCount - 1)
-    if (target == current) return
-
-    if (abs(target - current) == 1 && animateAdjacentPage) {
-        animateScrollToPage(target)
-    } else {
-        scrollToPage(target)
-    }
-}
+    val target =
