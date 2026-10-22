@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,6 +43,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -87,6 +89,7 @@ fun GroupPagerPage(
         mainViewModel.serverGroupState(groupId)
     }
     val groupState by groupStateFlow.collectAsStateWithLifecycle()
+    val layoutDirection = LocalLayoutDirection.current
     val canReorder = groupId.isNotEmpty() && searchQuery.isEmpty()
     val actions = remember(
         onSelectServer,
@@ -117,7 +120,12 @@ fun GroupPagerPage(
         onMoveServer = { fromIndex, toIndex ->
             mainViewModel.moveServer(groupId, fromIndex, toIndex)
         },
-        contentPadding = contentPadding
+        contentPadding = PaddingValues(
+            start = contentPadding.calculateStartPadding(layoutDirection),
+            top = contentPadding.calculateTopPadding() + 10.dp,
+            end = contentPadding.calculateEndPadding(layoutDirection),
+            bottom = contentPadding.calculateBottomPadding()
+        )
     )
 }
 
@@ -350,7 +358,24 @@ private fun ServerListItem(
                 }
                 .clickable { actions.select(row.guid) }
         ) {
-            Spacer(Modifier.width(10.dp))
+            Box(
+                Modifier
+                    .width(10.dp)
+                    .fillMaxHeight()
+            ) {
+                if (isSelected) {
+                    Row {
+                        Spacer(Modifier.width(6.dp))
+                        Box(
+                            Modifier
+                                .width(4.dp)
+                                .fillMaxHeight()
+                                .padding(vertical = 10.dp)
+                                .background(MaterialTheme.colorScheme.primary)
+                        )
+                    }
+                }
+            }
 
             Column(
                 Modifier
