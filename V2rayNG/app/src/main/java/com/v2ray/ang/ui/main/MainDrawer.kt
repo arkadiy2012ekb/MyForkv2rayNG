@@ -130,7 +130,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Значок: V в ровном светлом круге (не белом) с мягкой тенью вправо-вниз («на 5 часов»)
+                    // Значок: V в ровном светлом круге (не белом) с плавной тенью «на 5 часов»
                     Box(
                         modifier = Modifier.size(100.dp),
                         contentAlignment = Alignment.Center
@@ -140,17 +140,25 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                                 // Сдвиг круга влево, подальше от надписи
                                 .offset(x = (-14).dp)
                                 .size(82.dp)
-                                // Собственная тень, смещённая вправо и вниз
+                                // Плавная тень: небольшой сдвиг вправо-вниз, мягкое затухание
                                 .drawBehind {
+                                    val circleRadius = size.minDimension / 2f
+                                    val blur = 8.dp.toPx()
+                                    val shadowRadius = circleRadius + blur
                                     val shadowCenter = Offset(
                                         center.x + 4.dp.toPx(),
-                                        center.y + 7.dp.toPx()
+                                        center.y + 5.dp.toPx()
                                     )
-                                    val shadowRadius = (size.minDimension / 2f) * 1.15f
+                                    val inner = ((circleRadius - 4.dp.toPx()) / shadowRadius)
+                                        .coerceIn(0f, 0.95f)
+                                    val span = 1f - inner
+                                    val a = 0.30f
                                     drawCircle(
                                         brush = Brush.radialGradient(
-                                            0.0f to Color.Black.copy(alpha = 0.35f),
-                                            0.80f to Color.Black.copy(alpha = 0.35f),
+                                            0.0f to Color.Black.copy(alpha = a),
+                                            inner to Color.Black.copy(alpha = a),
+                                            inner + span * 0.33f to Color.Black.copy(alpha = a * 0.60f),
+                                            inner + span * 0.66f to Color.Black.copy(alpha = a * 0.22f),
                                             1.0f to Color.Transparent,
                                             center = shadowCenter,
                                             radius = shadowRadius
