@@ -138,16 +138,16 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                         Box(
                             modifier = Modifier
                                 // Сдвиг круга влево, подальше от надписи
-                                .offset(x = (-14).dp)
-                                .size(82.dp)
-                                // Плавная тень: небольшой сдвиг вправо-вниз, мягкое затухание
+                                .offset(x = (-12).dp)
+                                .size(78.dp)
+                                // Плавная тень: малый сдвиг вправо-вниз, мягкое затухание
                                 .drawBehind {
                                     val circleRadius = size.minDimension / 2f
-                                    val blur = 8.dp.toPx()
+                                    val blur = 6.dp.toPx()
                                     val shadowRadius = circleRadius + blur
                                     val shadowCenter = Offset(
-                                        center.x + 4.dp.toPx(),
-                                        center.y + 5.dp.toPx()
+                                        center.x + 3.dp.toPx(),
+                                        center.y + 4.dp.toPx()
                                     )
                                     val inner = ((circleRadius - 4.dp.toPx()) / shadowRadius)
                                         .coerceIn(0f, 0.95f)
@@ -177,7 +177,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                                 painter = painterResource(R.mipmap.ic_launcher_foreground),
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .size(57.dp)
+                                    .size(54.dp)
                                     .scale(2.3f),
                                 colorFilter = if (isDarkTheme) {
                                     ColorFilter.tint(Color.White, BlendMode.SrcIn)
