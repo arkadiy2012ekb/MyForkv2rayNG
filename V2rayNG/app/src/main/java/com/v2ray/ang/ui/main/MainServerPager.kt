@@ -1,7 +1,11 @@
 package com.v2ray.ang.ui.main
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +49,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -59,6 +64,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.v2ray.ang.R
 import com.v2ray.ang.dto.LocateTarget
 import com.v2ray.ang.dto.entities.ProfileItem
+import com.v2ray.ang.ui.compose.LocalDarkTheme
 import com.v2ray.ang.ui.compose.ReorderableGridItem
 import com.v2ray.ang.ui.compose.ReorderableListItem
 import com.v2ray.ang.ui.compose.colorConfigType
@@ -326,6 +332,15 @@ private fun ServerListItem(
     } else {
         null
     }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val baseColor = MaterialTheme.colorScheme.surfaceContainerLowest
+    val pressOverlay = if (LocalDarkTheme.current) Color.White else Color.Black
+    val tileColor by animateColorAsState(
+        targetValue = if (isPressed) pressOverlay.copy(alpha = 0.05f).compositeOver(baseColor) else baseColor,
+        animationSpec = tween(durationMillis = 120),
+        label = "TilePressColor"
+    )
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -345,7 +360,7 @@ private fun ServerListItem(
                 }
             },
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        color = tileColor,
         tonalElevation = 0.dp,
         shadowElevation = 0.dp
     ) {
@@ -358,7 +373,7 @@ private fun ServerListItem(
                         stateDescription = selectedStateDescription
                     }
                 }
-                .clickable { actions.select(row.guid) }
+                .clickable(interactionSource = interactionSource, indication = null) { actions.select(row.guid) }
         ) {
             Box(
                 Modifier
