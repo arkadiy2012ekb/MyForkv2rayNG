@@ -3,6 +3,7 @@ package com.v2ray.ang.ui.main
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerState
@@ -35,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -57,14 +60,18 @@ import com.v2ray.ang.ui.compose.verticalScrollbar
 // Шрифт Montserrat Thin уже есть в проекте (res/font/montserrat_thin.ttf)
 private val TitleFontFamily = FontFamily(Font(R.font.montserrat_thin, FontWeight.Thin))
 
-enum class MainDestination(@DrawableRes val iconRes: Int, @StringRes val labelRes: Int) {
+enum class MainDestination(
+    @DrawableRes val iconRes: Int,
+    @StringRes val labelRes: Int? = null,
+    val label: String? = null
+) {
     Subscriptions(R.drawable.ic_subscriptions_24dp, R.string.title_sub_setting),
     PerAppProxy(R.drawable.ic_per_apps_24dp, R.string.per_app_proxy_settings),
     Routing(R.drawable.ic_routing_24dp, R.string.routing_settings_title),
     UserAssets(R.drawable.ic_file_24dp, R.string.title_user_asset_setting),
     Settings(R.drawable.ic_settings_24dp, R.string.title_settings),
-    Promotion(R.drawable.ic_promotion_24dp, R.string.title_pref_promotion),
     Logcat(R.drawable.ic_logcat_24dp, R.string.title_logcat),
+    VulnCheck(R.drawable.ic_promotion_24dp, label = "Проверка уязвимостей"),
     CheckUpdate(R.drawable.ic_check_update_24dp, R.string.update_check_for_update),
     BackupRestore(R.drawable.ic_restore_24dp, R.string.title_configuration_backup_restore),
     About(R.drawable.ic_about_24dp, R.string.title_about)
@@ -79,8 +86,8 @@ private val primaryDrawerItems = listOf(
 )
 
 private val drawerItems = primaryDrawerItems + listOf(
-    MainDestination.Promotion,
     MainDestination.Logcat,
+    MainDestination.VulnCheck,
     MainDestination.BackupRestore,
     MainDestination.About
 )
@@ -124,39 +131,34 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Значок: увеличен, с мягкой тенью
+                    // Значок: V в ровном светлом круге (не белом) с мягкой тенью
                     Box(
                         modifier = Modifier.size(100.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        // Тень: несколько слабых копий значка с небольшим смещением (мягкий край, без размытия)
-                        repeat(4) { i ->
-                            val d = (i + 1) * 0.4f
+                        Box(
+                            modifier = Modifier
+                                .size(92.dp)
+                                .shadow(elevation = 6.dp, shape = CircleShape, clip = false)
+                                .background(
+                                    color = if (isDarkTheme) Color(0xFF2B2B2B) else Color(0xFFECECEC),
+                                    shape = CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Image(
                                 painter = painterResource(R.mipmap.ic_launcher_foreground),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(64.dp)
-                                    .offset(x = d.dp, y = (d * 1.4f).dp)
-                                    .scale(2.6f),
-                                colorFilter = ColorFilter.tint(
-                                    Color.Black.copy(alpha = 0.08f),
-                                    BlendMode.SrcIn
-                                )
+                                    .scale(2.3f),
+                                colorFilter = if (isDarkTheme) {
+                                    ColorFilter.tint(Color.White, BlendMode.SrcIn)
+                                } else {
+                                    null
+                                }
                             )
                         }
-                        Image(
-                            painter = painterResource(R.mipmap.ic_launcher_foreground),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(64.dp)
-                                .scale(2.6f),
-                            colorFilter = if (isDarkTheme) {
-                                ColorFilter.tint(Color.White, BlendMode.SrcIn)
-                            } else {
-                                null
-                            }
-                        )
                     }
                     // Название: Montserrat Thin, курсив под наклон значка и тень
                     Text(
@@ -203,7 +205,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = stringResource(item.labelRes),
+                        text = item.labelRes?.let { stringResource(it) } ?: item.label.orEmpty(),
                         fontSize = 15.sp,
                         letterSpacing = 0.1.sp,
                         fontWeight = FontWeight.Medium,
