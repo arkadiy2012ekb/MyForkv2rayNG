@@ -126,7 +126,7 @@ fun GroupPagerPage(
             start = contentPadding.calculateStartPadding(layoutDirection),
             top = contentPadding.calculateTopPadding() + 10.dp,
             end = contentPadding.calculateEndPadding(layoutDirection),
-            bottom = contentPadding.calculateBottomPadding()
+            bottom = contentPadding.calculateBottomPadding() + 10.dp
         )
     )
 }
