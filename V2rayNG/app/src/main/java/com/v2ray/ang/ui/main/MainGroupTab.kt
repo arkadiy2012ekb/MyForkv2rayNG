@@ -37,23 +37,30 @@ fun GroupTabBar(
     modifier: Modifier = Modifier
 ) {
     val selectedIndex = selectedTabIndex.coerceIn(0, groups.lastIndex)
+    val panelColor = MaterialTheme.colorScheme.surface
     Box(
         modifier = modifier
             .fillMaxWidth()
             .zIndex(1f)
             .drawBehind {
+                val extraHeight = 9.dp.toPx()
                 val shadowHeight = 10.dp.toPx()
+                drawRect(
+                    color = panelColor,
+                    topLeft = Offset(0f, size.height),
+                    size = Size(size.width, extraHeight)
+                )
                 drawRect(
                     brush = Brush.verticalGradient(
                         colors = listOf(Color.Black.copy(alpha = 0.10f), Color.Transparent),
-                        startY = size.height,
-                        endY = size.height + shadowHeight
+                        startY = size.height + extraHeight,
+                        endY = size.height + extraHeight + shadowHeight
                     ),
-                    topLeft = Offset(0f, size.height),
+                    topLeft = Offset(0f, size.height + extraHeight),
                     size = Size(size.width, shadowHeight)
                 )
             }
-            .background(MaterialTheme.colorScheme.surface)
+            .background(panelColor)
     ) {
         ScrollableTabRow(
             selectedTabIndex = selectedIndex,
@@ -102,7 +109,7 @@ private fun GroupTabItem(
         onClick = onClick,
         modifier = Modifier
             .widthIn(min = 56.dp)
-            .heightIn(min = 56.dp),
+            .heightIn(min = 48.dp),
         text = {
             Text(
                 text = text,
