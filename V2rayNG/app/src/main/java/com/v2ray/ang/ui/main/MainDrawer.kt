@@ -96,13 +96,16 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
     val drawerScrollState = rememberScrollState()
     val isDarkTheme = LocalDarkTheme.current
     val itemColor = MaterialTheme.colorScheme.onSurfaceVariant
-    // Фон панели: светло-серый, как в версии 2.2.6
-    val containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surface else Color(0xFFF0F0F0)
+    // Фон меню: белый, как у верхней и нижней панелей главной страницы (светлая тема)
+    val containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surface else Color(0xFFFFFFFF)
+    // Шапка: цвет центральной области главной страницы (#F1F2F7), в тёмной теме без изменений
+    val headerBaseColor = if (isDarkTheme) containerColor else Color(0xFFF1F2F7)
 
     ModalDrawerSheet(
         drawerState = drawerState,
         modifier = Modifier
-            .fillMaxWidth(0.835f)
+            // Чуть шире (+примерно 3 dp), чтобы закрыть элементы, выступающие у края
+            .fillMaxWidth(0.843f)
             .windowInsetsPadding(WindowInsets.systemBars),
         drawerContainerColor = containerColor,
         windowInsets = WindowInsets(0, 0, 0, 0)
@@ -112,8 +115,12 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                 .verticalScroll(drawerScrollState)
                 .verticalScrollbar(drawerScrollState)
         ) {
-            // Шапка: серое свечение, значок и название в одну строку
-            val glowColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.30f)
+            // Шапка: мягкое свечение в цвете главной страницы, значок и название в одну строку
+            val glowColor = if (isDarkTheme) {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.30f)
+            } else {
+                Color(0xFFDFE1EA)
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -121,7 +128,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                     .drawBehind {
                         drawRect(
                             Brush.radialGradient(
-                                colors = listOf(glowColor, containerColor),
+                                colors = listOf(glowColor, headerBaseColor),
                                 center = center,
                                 radius = size.width * 0.6f
                             )
