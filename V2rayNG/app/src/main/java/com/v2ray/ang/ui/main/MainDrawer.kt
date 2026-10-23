@@ -37,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -131,15 +130,35 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Значок: V в ровном светлом круге (не белом) с мягкой тенью
+                    // Значок: V в ровном светлом круге (не белом) с мягкой тенью вправо-вниз («на 5 часов»)
                     Box(
                         modifier = Modifier.size(100.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(92.dp)
-                                .shadow(elevation = 6.dp, shape = CircleShape, clip = false)
+                                // Сдвиг круга влево, подальше от надписи
+                                .offset(x = (-14).dp)
+                                .size(82.dp)
+                                // Собственная тень, смещённая вправо и вниз
+                                .drawBehind {
+                                    val shadowCenter = Offset(
+                                        center.x + 4.dp.toPx(),
+                                        center.y + 7.dp.toPx()
+                                    )
+                                    val shadowRadius = (size.minDimension / 2f) * 1.15f
+                                    drawCircle(
+                                        brush = Brush.radialGradient(
+                                            0.0f to Color.Black.copy(alpha = 0.35f),
+                                            0.80f to Color.Black.copy(alpha = 0.35f),
+                                            1.0f to Color.Transparent,
+                                            center = shadowCenter,
+                                            radius = shadowRadius
+                                        ),
+                                        radius = shadowRadius,
+                                        center = shadowCenter
+                                    )
+                                }
                                 .background(
                                     color = if (isDarkTheme) Color(0xFF2B2B2B) else Color(0xFFECECEC),
                                     shape = CircleShape
@@ -150,7 +169,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                                 painter = painterResource(R.mipmap.ic_launcher_foreground),
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .size(64.dp)
+                                    .size(57.dp)
                                     .scale(2.3f),
                                 colorFilter = if (isDarkTheme) {
                                     ColorFilter.tint(Color.White, BlendMode.SrcIn)
