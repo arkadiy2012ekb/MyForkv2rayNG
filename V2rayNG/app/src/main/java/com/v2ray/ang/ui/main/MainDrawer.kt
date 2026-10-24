@@ -56,8 +56,10 @@ import com.v2ray.ang.R
 import com.v2ray.ang.ui.compose.LocalDarkTheme
 import com.v2ray.ang.ui.compose.verticalScrollbar
 
-// Шрифт Montserrat Thin уже есть в проекте (res/font/montserrat_thin.ttf)
-private val TitleFontFamily = FontFamily(Font(R.font.montserrat_thin, FontWeight.Thin))
+// Шрифт Source Sans 3 SemiBold Italic (похож на Myriad Pro Italic): файл res/font/source_sans3_semibold_italic.ttf
+private val TitleFontFamily = FontFamily(
+    Font(R.font.source_sans3_semibold_italic, FontWeight.SemiBold, FontStyle.Italic)
+)
 
 enum class MainDestination(
     @DrawableRes val iconRes: Int,
@@ -100,6 +102,9 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
     val containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surface else Color(0xFFF2F2F2)
     // Тёмная тема: края шапки как раньше
     val headerBaseColor = containerColor
+    // Цвет надписи и ника (светлая тема: #48454E с макета), тень: белая в светлой теме, тёмная в тёмной
+    val titleColor = if (isDarkTheme) MaterialTheme.colorScheme.onSurface else Color(0xFF48454E)
+    val titleShadowColor = if (isDarkTheme) Color.Black.copy(alpha = 0.35f) else Color.White.copy(alpha = 0.9f)
 
     ModalDrawerSheet(
         drawerState = drawerState,
@@ -115,7 +120,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                 .verticalScroll(drawerScrollState)
                 .verticalScrollbar(drawerScrollState)
         ) {
-            // Шапка: значок и название в одну строку
+            // Шапка: значок, название и ник
             val glowColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.30f)
             Box(
                 modifier = Modifier
@@ -139,7 +144,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Значок: V в ровном светлом круге (не белом) с плавной тенью «на 5 часов»
+                    // Значок: V в ровном светлом круге (95% от белого) с плавной тенью «на 5 часов»
                     Box(
                         modifier = Modifier.size(100.dp),
                         contentAlignment = Alignment.Center
@@ -177,7 +182,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                                     )
                                 }
                                 .background(
-                                    color = if (isDarkTheme) Color(0xFF2B2B2B) else Color(0xFFECECEC),
+                                    color = if (isDarkTheme) Color(0xFF2B2B2B) else Color(0xFFF2F2F2),
                                     shape = CircleShape
                                 ),
                             contentAlignment = Alignment.Center
@@ -196,23 +201,40 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                             )
                         }
                     }
-                    // Название: Montserrat Thin, курсив под наклон значка и тень
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        fontSize = 42.sp,
-                        fontFamily = TitleFontFamily,
-                        fontStyle = FontStyle.Italic,
-                        fontWeight = FontWeight.Thin,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = TextStyle(
-                            shadow = Shadow(
-                                color = Color.Black.copy(alpha = 0.35f),
-                                offset = Offset(3f, 5f),
-                                blurRadius = 6f
+                    // Ник над названием (по правому краю) и название: Source Sans 3 SemiBold Italic
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = "@arkadiy2012ekb",
+                            fontSize = 13.sp,
+                            fontFamily = TitleFontFamily,
+                            fontStyle = FontStyle.Italic,
+                            fontWeight = FontWeight.SemiBold,
+                            color = titleColor,
+                            style = TextStyle(
+                                shadow = Shadow(
+                                    color = titleShadowColor,
+                                    offset = Offset(2f, 3f),
+                                    blurRadius = 4f
+                                )
+                            ),
+                            modifier = Modifier.offset(x = 5.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            fontSize = 45.sp,
+                            fontFamily = TitleFontFamily,
+                            fontStyle = FontStyle.Italic,
+                            fontWeight = FontWeight.SemiBold,
+                            color = titleColor,
+                            style = TextStyle(
+                                shadow = Shadow(
+                                    color = titleShadowColor,
+                                    offset = Offset(3f, 4f),
+                                    blurRadius = 6f
+                                )
                             )
-                        ),
-                        modifier = Modifier.offset(y = 14.dp)
-                    )
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
