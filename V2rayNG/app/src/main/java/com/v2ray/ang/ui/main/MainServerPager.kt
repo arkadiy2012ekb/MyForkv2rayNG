@@ -352,8 +352,7 @@ private fun ServerListItem(
                 for (i in layers downTo 1) {
                     val out = maxOut * i / layers
                     drawRoundRect(
-                        // Тень вокруг плашки: темнее (было 0.022f)
-                        color = Color.Black.copy(alpha = 0.05f),
+                        color = Color.Black.copy(alpha = 0.022f),
                         topLeft = Offset(-out, -out),
                         size = Size(size.width + 2 * out, size.height + 2 * out),
                         cornerRadius = CornerRadius(radius + out, radius + out)
@@ -363,4 +362,134 @@ private fun ServerListItem(
         shape = RoundedCornerShape(16.dp),
         color = tileColor,
         tonalElevation = 0.dp,
-        shadowElevation =
+        shadowElevation = 0.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .semantics {
+                    if (selectedStateDescription != null) {
+                        stateDescription = selectedStateDescription
+                    }
+                }
+                .clickable(interactionSource = interactionSource, indication = null) { actions.select(row.guid) }
+        ) {
+            Box(
+                Modifier
+                    .width(10.dp)
+                    .fillMaxHeight()
+            ) {
+                if (isSelected) {
+                    Row {
+                        Spacer(Modifier.width(6.dp))
+                        Box(
+                            Modifier
+                                .width(4.dp)
+                                .fillMaxHeight()
+                                .padding(vertical = 10.dp)
+                                .background(MaterialTheme.colorScheme.primary)
+                        )
+                    }
+                }
+            }
+
+            Column(
+                Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
+            ) {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(row.remarks, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge.copy(lineBreak = LineBreak.Paragraph), maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    if (doubleColumnDisplay) {
+                        IconButton(onClick = { actions.more(row.guid, row.profile) }, Modifier.size(36.dp)) {
+                            Icon(
+                                painterResource(R.drawable.ic_more_vert_24dp),
+                                stringResource(R.string.acc_more),
+                                Modifier.size(24.dp)
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = { actions.share(row.guid, row.profile) }, Modifier.size(36.dp)) {
+                            Icon(
+                                painterResource(R.drawable.ic_share_24dp),
+                                stringResource(R.string.title_configuration_share),
+                                Modifier.size(24.dp)
+                            )
+                        }
+                        IconButton(onClick = { actions.edit(row.guid, row.profile) }, Modifier.size(36.dp)) {
+                            Icon(
+                                painterResource(R.drawable.ic_edit_24dp),
+                                stringResource(R.string.acc_edit),
+                                Modifier.size(24.dp)
+                            )
+                        }
+                        IconButton(onClick = { actions.remove(row.guid, row.remarks) }, Modifier.size(36.dp)) {
+                            Icon(
+                                painterResource(R.drawable.ic_delete_24dp),
+                                stringResource(R.string.acc_delete),
+                                Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    if (row.subscriptionBadge.isNotBlank()) {
+                        Box(
+                            Modifier
+                                .size(24.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)), Alignment.Center
+                        ) {
+                            Text(row.subscriptionBadge.uppercase(), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                    Text(
+                        row.statistics,
+                        Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(
+                        row.typeDescription,
+                        modifier = Modifier.weight(1f, fill = false),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colorConfigType,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        testResult,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (row.testDelayMillis < 0L) colorPingRed else colorPing,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+        }
+    }
+}
+
+internal suspend fun PagerState.navigateToPageOptimized(
+    targetPage: Int,
+    animateAdjacentPage: Boolean = true
+) {
+    if (pageCount <= 0) return
+    val target = targetPage.coerceIn(0, pageCount - 1)
+    val current = settledPage.coerceIn(0, pageCount - 1)
+    if (target == current) return
+
+    if (abs(target - current) == 1 && animateAdjacentPage) {
+        animateScrollToPage(target)
+    } else {
+        scrollToPage(target)
+    }
+}
