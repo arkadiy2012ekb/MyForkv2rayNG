@@ -31,7 +31,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,12 +44,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -130,9 +126,9 @@ fun GroupPagerPage(
         },
         contentPadding = PaddingValues(
             start = contentPadding.calculateStartPadding(layoutDirection),
-            top = contentPadding.calculateTopPadding() + 10.dp,
+            top = contentPadding.calculateTopPadding(),
             end = contentPadding.calculateEndPadding(layoutDirection),
-            bottom = contentPadding.calculateBottomPadding() + 10.dp
+            bottom = contentPadding.calculateBottomPadding()
         )
     )
 }
@@ -334,33 +330,18 @@ private fun ServerListItem(
     }
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val baseColor = MaterialTheme.colorScheme.surfaceContainerLowest
     val pressOverlay = if (LocalDarkTheme.current) Color.White else Color.Black
-    val tileColor by animateColorAsState(
-        targetValue = if (isPressed) pressOverlay.copy(alpha = 0.05f).compositeOver(baseColor) else baseColor,
+    // Строка прозрачная (плоский список как по умолчанию), при нажатии слегка затемняется
+    val rowColor by animateColorAsState(
+        targetValue = if (isPressed) pressOverlay.copy(alpha = 0.05f) else Color.Transparent,
         animationSpec = tween(durationMillis = 120),
-        label = "TilePressColor"
+        label = "RowPressColor"
     )
+    Column {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 6.dp, vertical = 4.dp)
-            .drawBehind {
-                val layers = 8
-                val maxOut = 4.dp.toPx()
-                val radius = 16.dp.toPx()
-                for (i in layers downTo 1) {
-                    val out = maxOut * i / layers
-                    drawRoundRect(
-                        color = Color.Black.copy(alpha = 0.05f),
-                        topLeft = Offset(-out, -out),
-                        size = Size(size.width + 2 * out, size.height + 2 * out),
-                        cornerRadius = CornerRadius(radius + out, radius + out)
-                    )
-                }
-            },
-        shape = RoundedCornerShape(16.dp),
-        color = tileColor,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RectangleShape,
+        color = rowColor,
         tonalElevation = 0.dp,
         shadowElevation = 0.dp
     ) {
@@ -475,6 +456,13 @@ private fun ServerListItem(
                 }
             }
         }
+    }
+    // Тонкий разделитель между строками (как в списке по умолчанию)
+    HorizontalDivider(
+        modifier = Modifier.padding(horizontal = 6.dp),
+        thickness = 1.dp,
+        color = MaterialTheme.colorScheme.outlineVariant
+    )
     }
 }
 
