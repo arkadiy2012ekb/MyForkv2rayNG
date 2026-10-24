@@ -132,16 +132,17 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                                 )
                             )
                         } else {
-                            // Светлая тема: линейный градиент по диагонали (левый верх -> правый низ)
+                            // Светлая тема: длинная линейная полоса слева направо.
+                            // Правый край = цвет боковины (#A2A1A6), к левому краю плавно светлее.
                             drawRect(
                                 Brush.linearGradient(
                                     colors = listOf(
-                                        Color(0xFFB6BECA),
-                                        Color(0xFFB0BAC5),
-                                        Color(0xFFA9B3C0)
+                                        Color(0xFFB8B7BC),
+                                        Color(0xFFADACB1),
+                                        Color(0xFFA2A1A6)
                                     ),
                                     start = Offset(0f, 0f),
-                                    end = Offset(size.width, size.height)
+                                    end = Offset(size.width, 0f)
                                 )
                             )
                         }
