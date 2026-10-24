@@ -258,7 +258,7 @@ fun MainScreen(
                             .fillMaxSize()
                             .then(
                                 if (isDarkTheme) Modifier
-                                else Modifier.background(Color(0xFFD3E4E8))
+                                else Modifier.background(Color(0xFFF2F2F2))
                             )
                     ) {
                         SoftWhiteTheme(isDarkTheme) {
