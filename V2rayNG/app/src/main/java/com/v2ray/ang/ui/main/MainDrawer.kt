@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.BlendMode
@@ -42,7 +43,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -98,8 +101,11 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
     val itemColor = MaterialTheme.colorScheme.onSurfaceVariant
     // Фон меню: нейтральный серый, 95% от белого (#F2F2F2), без оттенка (светлая тема)
     val containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surface else Color(0xFFF2F2F2)
-    // Шапка: один сплошной цвет центральной области главной страницы (#F1F2F7), в тёмной теме без изменений
-    val headerBaseColor = if (isDarkTheme) containerColor else Color(0xFFF1F2F7)
+    // Тёмная тема: края шапки как раньше
+    val headerBaseColor = containerColor
+    // Светлая тема: ромбовидный градиент по макету (центр светлее, края темнее)
+    val lightCenter = Color(0xFFBEC4D0)
+    val lightEdge = Color(0xFF9BA9B6)
 
     ModalDrawerSheet(
         drawerState = drawerState,
@@ -121,6 +127,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(160.dp)
+                    .clipToBounds()
                     .drawBehind {
                         if (isDarkTheme) {
                             // Тёмная тема: без изменений
@@ -132,8 +139,25 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                                 )
                             )
                         } else {
-                            // Светлая тема: один сплошной цвет, без градиента
-                            drawRect(headerBaseColor)
+                            // Светлая тема: ромбовидный градиент от центра шапки.
+                            // По бокам цвет темнеет быстрее, вверх и вниз медленнее.
+                            val cx = size.width * 0.55f
+                            val cy = size.height / 2f
+                            drawRect(lightEdge)
+                            val steps = 100
+                            for (i in steps downTo 1) {
+                                val t = i / steps.toFloat()
+                                val reachX = t * size.width * 0.5f / 0.9f
+                                val reachY = t * size.height
+                                val path = Path().apply {
+                                    moveTo(cx - reachX, cy)
+                                    lineTo(cx, cy - reachY)
+                                    lineTo(cx + reachX, cy)
+                                    lineTo(cx, cy + reachY)
+                                    close()
+                                }
+                                drawPath(path, lerp(lightCenter, lightEdge, t))
+                            }
                         }
                     },
                 contentAlignment = Alignment.Center
