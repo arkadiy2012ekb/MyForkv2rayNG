@@ -352,7 +352,7 @@ private fun ServerListItem(
                 for (i in layers downTo 1) {
                     val out = maxOut * i / layers
                     drawRoundRect(
-                        color = Color.Black.copy(alpha = 0.022f),
+                        color = Color.Black.copy(alpha = 0.05f),
                         topLeft = Offset(-out, -out),
                         size = Size(size.width + 2 * out, size.height + 2 * out),
                         cornerRadius = CornerRadius(radius + out, radius + out)
