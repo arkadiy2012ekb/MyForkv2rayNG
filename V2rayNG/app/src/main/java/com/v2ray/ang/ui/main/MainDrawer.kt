@@ -50,6 +50,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.v2ray.ang.R
@@ -102,9 +103,9 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
     val containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surface else Color(0xFFF2F2F2)
     // Тёмная тема: края шапки как раньше
     val headerBaseColor = containerColor
-    // Цвет надписи и ника (светлая тема: #48454E с макета), тень: белая в светлой теме, тёмная в тёмной
+    // Цвет надписи и ника (светлая тема: #48454E с макета), тень: чистый белый в светлой теме, тёмная в тёмной
     val titleColor = if (isDarkTheme) MaterialTheme.colorScheme.onSurface else Color(0xFF48454E)
-    val titleShadowColor = if (isDarkTheme) Color.Black.copy(alpha = 0.35f) else Color.White.copy(alpha = 0.9f)
+    val titleShadowColor = if (isDarkTheme) Color.Black.copy(alpha = 0.35f) else Color.White
 
     ModalDrawerSheet(
         drawerState = drawerState,
@@ -202,37 +203,41 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                         }
                     }
                     // Ник над названием (по правому краю) и название: Source Sans 3 SemiBold Italic
+                    // с дополнительным наклоном (как у Myriad Pro Italic) и белой тенью
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = "@arkadiy2012ekb",
-                            fontSize = 13.sp,
+                            fontSize = 11.sp,
                             fontFamily = TitleFontFamily,
                             fontStyle = FontStyle.Italic,
                             fontWeight = FontWeight.SemiBold,
                             color = titleColor,
                             style = TextStyle(
-                                shadow = Shadow(
-                                    color = titleShadowColor,
-                                    offset = Offset(2f, 3f),
-                                    blurRadius = 4f
-                                )
-                            ),
-                            modifier = Modifier.offset(x = 5.dp)
-                        )
-                        Text(
-                            text = stringResource(R.string.app_name),
-                            fontSize = 45.sp,
-                            fontFamily = TitleFontFamily,
-                            fontStyle = FontStyle.Italic,
-                            fontWeight = FontWeight.SemiBold,
-                            color = titleColor,
-                            style = TextStyle(
+                                textGeometricTransform = TextGeometricTransform(scaleX = 1f, skewX = -0.07f),
                                 shadow = Shadow(
                                     color = titleShadowColor,
                                     offset = Offset(3f, 4f),
-                                    blurRadius = 6f
+                                    blurRadius = 2f
                                 )
-                            )
+                            ),
+                            modifier = Modifier.offset(x = 4.dp, y = 16.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            fontSize = 47.sp,
+                            fontFamily = TitleFontFamily,
+                            fontStyle = FontStyle.Italic,
+                            fontWeight = FontWeight.SemiBold,
+                            color = titleColor,
+                            style = TextStyle(
+                                textGeometricTransform = TextGeometricTransform(scaleX = 1f, skewX = -0.07f),
+                                shadow = Shadow(
+                                    color = titleShadowColor,
+                                    offset = Offset(4f, 5f),
+                                    blurRadius = 3f
+                                )
+                            ),
+                            modifier = Modifier.offset(y = 7.dp)
                         )
                     }
                 }
