@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
@@ -41,6 +42,26 @@ import com.v2ray.ang.ui.compose.LocalDarkTheme
 import com.v2ray.ang.ui.compose.QRCodeDialog
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+
+// Светлая тема: чисто белый (100%) заменяется на 95% от белого (#F2F2F2), как в шторке.
+// Подменяются только цвета «поверхности» (панели) и «плитки», остальная тема не меняется.
+@Composable
+private fun SoftWhiteTheme(isDarkTheme: Boolean, content: @Composable () -> Unit) {
+    if (isDarkTheme) {
+        content()
+    } else {
+        val softWhite = Color(0xFFF2F2F2)
+        MaterialTheme(
+            colorScheme = MaterialTheme.colorScheme.copy(
+                surface = softWhite,
+                surfaceContainerLowest = softWhite
+            ),
+            shapes = MaterialTheme.shapes,
+            typography = MaterialTheme.typography,
+            content = content
+        )
+    }
+}
 
 @Composable
 fun MainScreen(
@@ -160,45 +181,49 @@ fun MainScreen(
         Scaffold(
             contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
             topBar = {
-                MainTopBar(
-                    isLoading = isLoading,
-                    showSearch = showSearch,
-                    searchQuery = searchQuery,
-                    onSearchQueryChange = { query: String ->
-                        searchQuery = query
-                        onAction(MainAction.Search(query))
-                    },
-                    onSearchClose = {
-                        searchQuery = ""
-                        onAction(MainAction.Search(""))
-                        showSearch = false
-                    },
-                    onSearchToggle = { show: Boolean -> showSearch = show },
-                    onMenuClick = { scope.launch { drawerState.open() } },
-                    onAction = onAction,
-                    onMoreMenuAction = { action ->
-                        when (action) {
-                            MainMoreMenuAction.RestartService -> onAction(MainAction.RestartService)
-                            MainMoreMenuAction.DeleteAll -> showDelAllConfirm = true
-                            MainMoreMenuAction.DeleteDuplicate -> showDelDuplicateConfirm = true
-                            MainMoreMenuAction.DeleteInvalid -> showDelInvalidConfirm = true
-                            MainMoreMenuAction.ExportAll -> onAction(MainAction.ExportAll)
-                            MainMoreMenuAction.LocateSelected -> onAction(MainAction.LocateSelectedServer)
-                            MainMoreMenuAction.SortByTestResults -> onAction(MainAction.SortByTestResults)
-                            MainMoreMenuAction.TestAll -> onAction(MainAction.TestAllServers)
-                            MainMoreMenuAction.TestAllRealPing -> onAction(MainAction.TestRealAllServers)
-                            MainMoreMenuAction.UpdateSubscriptions -> onAction(MainAction.UpdateSubscriptions)
+                SoftWhiteTheme(isDarkTheme) {
+                    MainTopBar(
+                        isLoading = isLoading,
+                        showSearch = showSearch,
+                        searchQuery = searchQuery,
+                        onSearchQueryChange = { query: String ->
+                            searchQuery = query
+                            onAction(MainAction.Search(query))
+                        },
+                        onSearchClose = {
+                            searchQuery = ""
+                            onAction(MainAction.Search(""))
+                            showSearch = false
+                        },
+                        onSearchToggle = { show: Boolean -> showSearch = show },
+                        onMenuClick = { scope.launch { drawerState.open() } },
+                        onAction = onAction,
+                        onMoreMenuAction = { action ->
+                            when (action) {
+                                MainMoreMenuAction.RestartService -> onAction(MainAction.RestartService)
+                                MainMoreMenuAction.DeleteAll -> showDelAllConfirm = true
+                                MainMoreMenuAction.DeleteDuplicate -> showDelDuplicateConfirm = true
+                                MainMoreMenuAction.DeleteInvalid -> showDelInvalidConfirm = true
+                                MainMoreMenuAction.ExportAll -> onAction(MainAction.ExportAll)
+                                MainMoreMenuAction.LocateSelected -> onAction(MainAction.LocateSelectedServer)
+                                MainMoreMenuAction.SortByTestResults -> onAction(MainAction.SortByTestResults)
+                                MainMoreMenuAction.TestAll -> onAction(MainAction.TestAllServers)
+                                MainMoreMenuAction.TestAllRealPing -> onAction(MainAction.TestRealAllServers)
+                                MainMoreMenuAction.UpdateSubscriptions -> onAction(MainAction.UpdateSubscriptions)
+                            }
                         }
-                    }
-                )
+                    )
+                }
             },
             bottomBar = {
-                MainBottomBar(
-                    displayText = displayText,
-                    isRunning = isRunning,
-                    isDarkTheme = isDarkTheme,
-                    onAction = onAction
-                )
+                SoftWhiteTheme(isDarkTheme) {
+                    MainBottomBar(
+                        displayText = displayText,
+                        isRunning = isRunning,
+                        isDarkTheme = isDarkTheme,
+                        onAction = onAction
+                    )
+                }
             },
             floatingActionButton = {},
         ) { innerPadding ->
@@ -211,19 +236,21 @@ fun MainScreen(
                         .padding(innerPadding)
                 ) {
                     if (groups.size > 1) {
-                        GroupTabBar(
-                            groups = groups,
-                            selectedTabIndex = pagerState.currentPage.coerceIn(0, groups.lastIndex),
-                            mainViewModel = mainViewModel,
-                            onTabClick = { targetIndex ->
-                                scope.launch {
-                                    pagerState.navigateToPageOptimized(
-                                        targetPage = targetIndex,
-                                        animateAdjacentPage = true
-                                    )
+                        SoftWhiteTheme(isDarkTheme) {
+                            GroupTabBar(
+                                groups = groups,
+                                selectedTabIndex = pagerState.currentPage.coerceIn(0, groups.lastIndex),
+                                mainViewModel = mainViewModel,
+                                onTabClick = { targetIndex ->
+                                    scope.launch {
+                                        pagerState.navigateToPageOptimized(
+                                            targetPage = targetIndex,
+                                            animateAdjacentPage = true
+                                        )
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
 
                     Box(
@@ -231,43 +258,45 @@ fun MainScreen(
                             .fillMaxSize()
                             .then(
                                 if (isDarkTheme) Modifier
-                                else Modifier.background(Color(0xFFF0F2F7))
+                                else Modifier.background(Color(0xFF71A5AF))
                             )
                     ) {
-                        HorizontalPager(
-                            state = pagerState,
-                            modifier = Modifier.fillMaxSize(),
-                            userScrollEnabled = true,
-                            beyondViewportPageCount = 1,
-                            key = { page -> groups.getOrNull(page)?.id ?: "group-page-$page" }
-                        ) { page ->
-                            val group = groups.getOrNull(page) ?: return@HorizontalPager
+                        SoftWhiteTheme(isDarkTheme) {
+                            HorizontalPager(
+                                state = pagerState,
+                                modifier = Modifier.fillMaxSize(),
+                                userScrollEnabled = true,
+                                beyondViewportPageCount = 1,
+                                key = { page -> groups.getOrNull(page)?.id ?: "group-page-$page" }
+                            ) { page ->
+                                val group = groups.getOrNull(page) ?: return@HorizontalPager
 
-                            GroupPagerPage(
-                                groupId = group.id,
-                                mainViewModel = mainViewModel,
-                                selectedGuid = selectedGuid,
-                                locateTarget = uiState.locateTarget,
-                                doubleColumnDisplay = doubleColumnDisplay,
-                                searchQuery = searchQuery,
-                                lazyListStates = lazyListStates,
-                                lazyGridStates = lazyGridStates,
-                                onSelectServer = { guid -> onAction(MainAction.SelectServer(guid)) },
-                                onEditServer = { guid, profile -> onAction(MainAction.EditServer(guid, profile)) },
-                                onShareServer = { guid, profile ->
-                                    shareTarget = Triple(guid, profile, false)
-                                },
-                                onMoreServer = { guid, profile ->
-                                    shareTarget = Triple(guid, profile, true)
-                                },
-                                onRemoveServer = removeServer,
-                                contentPadding = PaddingValues(
-                                    start = 0.dp,
-                                    top = 0.dp,
-                                    end = 0.dp,
-                                    bottom = 80.dp
+                                GroupPagerPage(
+                                    groupId = group.id,
+                                    mainViewModel = mainViewModel,
+                                    selectedGuid = selectedGuid,
+                                    locateTarget = uiState.locateTarget,
+                                    doubleColumnDisplay = doubleColumnDisplay,
+                                    searchQuery = searchQuery,
+                                    lazyListStates = lazyListStates,
+                                    lazyGridStates = lazyGridStates,
+                                    onSelectServer = { guid -> onAction(MainAction.SelectServer(guid)) },
+                                    onEditServer = { guid, profile -> onAction(MainAction.EditServer(guid, profile)) },
+                                    onShareServer = { guid, profile ->
+                                        shareTarget = Triple(guid, profile, false)
+                                    },
+                                    onMoreServer = { guid, profile ->
+                                        shareTarget = Triple(guid, profile, true)
+                                    },
+                                    onRemoveServer = removeServer,
+                                    contentPadding = PaddingValues(
+                                        start = 0.dp,
+                                        top = 0.dp,
+                                        end = 0.dp,
+                                        bottom = 80.dp
+                                    )
                                 )
-                            )
+                            }
                         }
                         // Зона свайпа у левого края: открывает меню, даже когда список занимает весь экран
                         Box(
