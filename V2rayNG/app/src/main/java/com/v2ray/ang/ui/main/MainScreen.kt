@@ -45,13 +45,8 @@ import kotlinx.coroutines.launch
 
 // Светлая тема: чисто белый (100%) заменяется на 95% от белого (#F2F2F2), как в шторке.
 // Подменяются только цвета «поверхности» (панели) и «плитки», остальная тема не меняется.
-// tileColor: цвет плиток серверов (по умолчанию как у панелей).
 @Composable
-private fun SoftWhiteTheme(
-    isDarkTheme: Boolean,
-    tileColor: Color = Color(0xFFF2F2F2),
-    content: @Composable () -> Unit
-) {
+private fun SoftWhiteTheme(isDarkTheme: Boolean, content: @Composable () -> Unit) {
     if (isDarkTheme) {
         content()
     } else {
@@ -59,7 +54,7 @@ private fun SoftWhiteTheme(
         MaterialTheme(
             colorScheme = MaterialTheme.colorScheme.copy(
                 surface = softWhite,
-                surfaceContainerLowest = tileColor
+                surfaceContainerLowest = softWhite
             ),
             shapes = MaterialTheme.shapes,
             typography = MaterialTheme.typography,
@@ -266,8 +261,8 @@ fun MainScreen(
                                 else Modifier.background(Color(0xFFFFFFFF))
                             )
                     ) {
-                        // Плитки серверов: цвет #F0F3F8 (как на скриншоте Stratum)
-                        SoftWhiteTheme(isDarkTheme, tileColor = Color(0xFFF0F3F8)) {
+                        // Плитки серверов: 95% от белого (#F2F2F2), как верх, низ и шторка
+                        SoftWhiteTheme(isDarkTheme) {
                             HorizontalPager(
                                 state = pagerState,
                                 modifier = Modifier.fillMaxSize(),
