@@ -102,8 +102,8 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
     val drawerScrollState = rememberScrollState()
     val isDarkTheme = LocalDarkTheme.current
     val itemColor = MaterialTheme.colorScheme.onSurfaceVariant
-    // Фон меню: ослаблен с чисто белого (100%) примерно до 90% (светлая тема)
-    val containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surface else Color(0xFFECEEF3)
+    // Фон меню: нейтральный светло-серый, ровно 90% от белого (#E6E6E6), без оттенка (светлая тема)
+    val containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surface else Color(0xFFE6E6E6)
     // Шапка: цвет центральной области главной страницы (#F1F2F7), в тёмной теме без изменений
     val headerBaseColor = if (isDarkTheme) containerColor else Color(0xFFF1F2F7)
 
@@ -129,7 +129,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
             val glowColor = if (isDarkTheme) {
                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.30f)
             } else {
-                Color(0xFFD3D6E1)
+                Color(0xFFBEC2CF)
             }
             Box(
                 modifier = Modifier
@@ -147,7 +147,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                                 )
                             )
                         } else {
-                            // Светлая тема: затемнение под кругом логотипа,
+                            // Светлая тема: затемнение под кругом логотипа и вокруг него,
                             // плавно переходящее в #F1F2F7 к краям шапки
                             val circleCenter = if (logoCenterRoot == Offset.Zero) {
                                 Offset(size.width * 0.28f, size.height / 2f)
@@ -156,9 +156,11 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                             }
                             drawRect(
                                 Brush.radialGradient(
-                                    colors = listOf(glowColor, headerBaseColor),
+                                    0.0f to glowColor,
+                                    0.40f to glowColor,
+                                    1.0f to headerBaseColor,
                                     center = circleCenter,
-                                    radius = 150.dp.toPx()
+                                    radius = 140.dp.toPx()
                                 )
                             )
                         }
