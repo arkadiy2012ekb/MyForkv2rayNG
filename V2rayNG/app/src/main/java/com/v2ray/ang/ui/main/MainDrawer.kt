@@ -132,19 +132,8 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                                 )
                             )
                         } else {
-                            // Светлая тема: один линейный градиент по диагонали
-                            // (левый верх -> правый низ), бирюзовый оттенок с образца
-                            drawRect(
-                                Brush.linearGradient(
-                                    colors = listOf(
-                                        Color(0xFF75A8B2),
-                                        Color(0xFF71A5AF),
-                                        Color(0xFF6DA1AC)
-                                    ),
-                                    start = Offset(0f, 0f),
-                                    end = Offset(size.width, size.height)
-                                )
-                            )
+                            // Светлая тема: один сплошной цвет, без градиента (без полос)
+                            drawRect(Color(0xFF71A5AF))
                         }
                     },
                 contentAlignment = Alignment.Center
