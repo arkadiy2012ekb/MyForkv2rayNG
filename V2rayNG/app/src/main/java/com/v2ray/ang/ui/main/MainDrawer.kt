@@ -32,6 +32,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +47,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -96,10 +102,14 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
     val drawerScrollState = rememberScrollState()
     val isDarkTheme = LocalDarkTheme.current
     val itemColor = MaterialTheme.colorScheme.onSurfaceVariant
-    // Фон меню: белый, как у верхней и нижней панелей главной страницы (светлая тема)
-    val containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surface else Color(0xFFFFFFFF)
+    // Фон меню: ослаблен с чисто белого (100%) примерно до 90% (светлая тема)
+    val containerColor = if (isDarkTheme) MaterialTheme.colorScheme.surface else Color(0xFFECEEF3)
     // Шапка: цвет центральной области главной страницы (#F1F2F7), в тёмной теме без изменений
     val headerBaseColor = if (isDarkTheme) containerColor else Color(0xFFF1F2F7)
+
+    // Положение шапки и значка на экране: нужно, чтобы затемнение шапки было точно под кругом
+    var headerOrigin by remember { mutableStateOf(Offset.Zero) }
+    var logoCenterRoot by remember { mutableStateOf(Offset.Zero) }
 
     ModalDrawerSheet(
         drawerState = drawerState,
@@ -115,31 +125,55 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                 .verticalScroll(drawerScrollState)
                 .verticalScrollbar(drawerScrollState)
         ) {
-            // Шапка: мягкое свечение в цвете главной страницы, значок и название в одну строку
+            // Шапка: мягкое затемнение под значком, значок и название в одну строку
             val glowColor = if (isDarkTheme) {
                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.30f)
             } else {
-                Color(0xFFDFE1EA)
+                Color(0xFFD3D6E1)
             }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(160.dp)
+                    .onGloballyPositioned { headerOrigin = it.positionInRoot() }
                     .drawBehind {
-                        drawRect(
-                            Brush.radialGradient(
-                                colors = listOf(glowColor, headerBaseColor),
-                                center = center,
-                                radius = size.width * 0.6f
+                        if (isDarkTheme) {
+                            // Тёмная тема: без изменений
+                            drawRect(
+                                Brush.radialGradient(
+                                    colors = listOf(glowColor, headerBaseColor),
+                                    center = center,
+                                    radius = size.width * 0.6f
+                                )
                             )
-                        )
+                        } else {
+                            // Светлая тема: затемнение под кругом логотипа,
+                            // плавно переходящее в #F1F2F7 к краям шапки
+                            val circleCenter = if (logoCenterRoot == Offset.Zero) {
+                                Offset(size.width * 0.28f, size.height / 2f)
+                            } else {
+                                logoCenterRoot - headerOrigin + Offset((-12).dp.toPx(), 0f)
+                            }
+                            drawRect(
+                                Brush.radialGradient(
+                                    colors = listOf(glowColor, headerBaseColor),
+                                    center = circleCenter,
+                                    radius = 150.dp.toPx()
+                                )
+                            )
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Значок: V в ровном светлом круге (не белом) с плавной тенью «на 5 часов»
                     Box(
-                        modifier = Modifier.size(100.dp),
+                        modifier = Modifier
+                            .size(100.dp)
+                            .onGloballyPositioned {
+                                logoCenterRoot = it.positionInRoot() +
+                                    Offset(it.size.width / 2f, it.size.height / 2f)
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
